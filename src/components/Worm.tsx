@@ -1,0 +1,153 @@
+import { useEffect, useRef, useState } from "react";
+
+// An animated earthworm that crawls along a meandering path across the page.
+const SEGMENTS = 18;
+const SEGMENT_SPACING = 18; // px between segment centers along the path
+
+type Point = { x: number; y: number };
+
+const Worm = () => {
+  const [size, setSize] = useState({ w: typeof window !== "undefined" ? window.innerWidth : 1200, h: typeof window !== "undefined" ? window.innerHeight : 800 });
+  const [tick, setTick] = useState(0);
+  const rafRef = useRef<number>();
+  const startRef = useRef<number>(performance.now());
+
+  useEffect(() => {
+    const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    const loop = () => {
+      setTick((performance.now() - startRef.current) / 1000);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  // Parametric meandering path across the viewport (figure-8-ish lissajous)
+  const pathAt = (t: number): Point => {
+    const w = size.w;
+    const h = size.h;
+    const cx = w / 2;
+    const cy = h / 2;
+    const ax = w * 0.38;
+    const ay = h * 0.32;
+    const x = cx + Math.sin(t * 0.6) * ax + Math.cos(t * 0.23) * 40;
+    const y = cy + Math.sin(t * 0.9) * ay * 0.8 + Math.cos(t * 0.5) * 30;
+    return { x, y };
+  };
+
+  // Build segments by sampling the path slightly behind in time
+  const head = pathAt(tick);
+  const segments: Point[] = [];
+  // approximate time-step that yields ~SEGMENT_SPACING px between samples
+  const dt = 0.06;
+  for (let i = 0; i < SEGMENTS; i++) {
+    segments.push(pathAt(tick - i * dt));
+  }
+
+  // body width tapers head-to-tail with a slight bulge mid-body
+  const widthAt = (i: number) => {
+    const n = SEGMENTS - 1;
+    const u = i / n; // 0 head .. 1 tail
+    const bulge = Math.sin(u * Math.PI) * 6;
+    return 22 - u * 10 + bulge;
+  };
+
+  // breathing / squish along the body
+  const squish = (i: number) => 1 + Math.sin(tick * 6 - i * 0.6) * 0.08;
+
+  // direction at head for eyes
+  const ahead = pathAt(tick + 0.05);
+  const angle = Math.atan2(ahead.y - head.y, ahead.x - head.x);
+
+  return (
+    <div className="pointer-events-none fixed inset-0 z-10" aria-hidden="true">
+      <svg width={size.w} height={size.h} className="absolute inset-0">
+        <defs>
+          <radialGradient id="wormGrad" cx="50%" cy="35%" r="60%">
+            <stop offset="0%" stopColor="hsl(var(--worm-body))" />
+            <stop offset="100%" stopColor="hsl(var(--worm-shadow))" />
+          </radialGradient>
+          <filter id="wormShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+            <feOffset dx="0" dy="4" result="off" />
+            <feComponentTransfer><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
+            <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        <g filter="url(#wormShadow)">
+          {/* tail to head so head renders on top */}
+          {segments
+            .map((p, i) => ({ p, i }))
+            .reverse()
+            .map(({ p, i }) => {
+              const r = (widthAt(i) / 2) * squish(i);
+              return (
+                <circle
+                  key={i}
+                  cx={p.x}
+                  cy={p.y}
+                  r={r}
+                  fill="url(#wormGrad)"
+                />
+              );
+            })}
+
+          {/* segmentation rings */}
+          {segments.slice(1, -1).map((p, idx) => {
+            const i = idx + 1;
+            const r = (widthAt(i) / 2) * squish(i) * 0.85;
+            return (
+              <circle
+                key={`ring-${i}`}
+                cx={p.x}
+                cy={p.y}
+                r={r}
+                fill="none"
+                stroke="hsl(var(--worm-shadow) / 0.35)"
+                strokeWidth={1}
+              />
+            );
+          })}
+
+          {/* clitellum (the band) */}
+          {(() => {
+            const p = segments[5];
+            const r = (widthAt(5) / 2) * squish(5) + 1.5;
+            return (
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={r}
+                fill="hsl(30 35% 75%)"
+                opacity={0.85}
+              />
+            );
+          })()}
+
+          {/* eyes */}
+          {(() => {
+            const eyeOffset = 4;
+            const nx = Math.cos(angle + Math.PI / 2);
+            const ny = Math.sin(angle + Math.PI / 2);
+            return (
+              <g>
+                <circle cx={head.x + nx * eyeOffset} cy={head.y + ny * eyeOffset} r={2} fill="hsl(var(--soil-dark))" />
+                <circle cx={head.x - nx * eyeOffset} cy={head.y - ny * eyeOffset} r={2} fill="hsl(var(--soil-dark))" />
+              </g>
+            );
+          })()}
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+export default Worm;
