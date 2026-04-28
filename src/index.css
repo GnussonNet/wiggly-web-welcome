@@ -4,47 +4,38 @@
 
 @layer base {
   :root {
-    /* Earthy, soil-inspired palette */
-    --background: 38 40% 92%;
-    --foreground: 25 35% 15%;
+    /* Minimal mono palette */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 8%;
 
-    --card: 38 40% 95%;
-    --card-foreground: 25 35% 15%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 8%;
 
-    --popover: 38 40% 95%;
-    --popover-foreground: 25 35% 15%;
+    --popover: 0 0% 98%;
+    --popover-foreground: 0 0% 8%;
 
-    --primary: 15 55% 32%;
-    --primary-foreground: 38 40% 95%;
+    --primary: 0 0% 8%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 30 25% 80%;
-    --secondary-foreground: 25 35% 15%;
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 8%;
 
-    --muted: 35 20% 85%;
-    --muted-foreground: 25 20% 40%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 350 60% 55%;
-    --accent-foreground: 38 40% 95%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 8%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 38 40% 95%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 30 25% 75%;
-    --input: 30 25% 75%;
-    --ring: 15 55% 32%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 0 0% 8%;
 
     --radius: 0.5rem;
 
-    /* Worm-specific tokens */
-    --worm-body: 350 45% 50%;
-    --worm-shadow: 350 50% 30%;
-    --soil-dark: 25 40% 18%;
-    --soil-light: 30 35% 35%;
-
-    --gradient-soil: linear-gradient(180deg, hsl(38 40% 92%) 0%, hsl(35 30% 82%) 100%);
-    --gradient-worm: linear-gradient(180deg, hsl(350 55% 60%) 0%, hsl(350 50% 38%) 100%);
-
-    --shadow-soft: 0 10px 40px -10px hsl(25 40% 18% / 0.25);
+    --worm-body: 0 0% 8%;
   }
 }
 
@@ -54,17 +45,13 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: 'Inter', system-ui, sans-serif;
     overflow-x: hidden;
   }
 }
 
 @layer utilities {
-  .font-display {
-    font-family: 'Fraunces', Georgia, serif;
-    font-optical-sizing: auto;
-  }
-  .font-body {
-    font-family: 'Inter', system-ui, sans-serif;
+  .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 }
