@@ -117,17 +117,17 @@ const Worm = () => {
             );
           })}
 
-          {/* clitellum (the band) */}
+          {/* clitellum (the band) — subtle */}
           {(() => {
             const p = segments[5];
-            const r = (widthAt(5) / 2) * squish(5) + 1.5;
+            const r = (widthAt(5) / 2) * squish(5) + 0.5;
             return (
               <circle
                 cx={p.x}
                 cy={p.y}
                 r={r}
-                fill="hsl(30 35% 75%)"
-                opacity={0.85}
+                fill="hsl(0 0% 100%)"
+                opacity={0.12}
               />
             );
           })()}
@@ -139,8 +139,8 @@ const Worm = () => {
             const ny = Math.sin(angle + Math.PI / 2);
             return (
               <g>
-                <circle cx={head.x + nx * eyeOffset} cy={head.y + ny * eyeOffset} r={2} fill="hsl(var(--soil-dark))" />
-                <circle cx={head.x - nx * eyeOffset} cy={head.y - ny * eyeOffset} r={2} fill="hsl(var(--soil-dark))" />
+                <circle cx={head.x + nx * eyeOffset} cy={head.y + ny * eyeOffset} r={1.8} fill="hsl(0 0% 100%)" />
+                <circle cx={head.x - nx * eyeOffset} cy={head.y - ny * eyeOffset} r={1.8} fill="hsl(0 0% 100%)" />
               </g>
             );
           })()}
