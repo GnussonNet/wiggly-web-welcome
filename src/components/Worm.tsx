@@ -113,7 +113,12 @@ const Worm = () => {
     <div
       className="fixed inset-0 z-10 cursor-pointer"
       aria-hidden="true"
+      role="button"
+      tabIndex={-1}
+      style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
       onPointerDown={handlePress}
+      onTouchStart={handlePress}
+      onClick={handlePress}
     >
       <svg width={size.w} height={size.h} className="absolute inset-0">
         <defs>
