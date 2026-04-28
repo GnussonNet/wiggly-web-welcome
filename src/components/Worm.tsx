@@ -2,15 +2,20 @@ import { useEffect, useRef, useState } from "react";
 
 // An animated earthworm that crawls along a meandering path across the page.
 const SEGMENTS = 18;
-const SEGMENT_SPACING = 18; // px between segment centers along the path
+const SQUEEZE_DURATION = 600; // ms to squeeze in
+const HOLD_DURATION = 250; // ms held compressed
+const RELEASE_DURATION = 500; // ms to expand back
 
 type Point = { x: number; y: number };
 
 const Worm = () => {
   const [size, setSize] = useState({ w: typeof window !== "undefined" ? window.innerWidth : 1200, h: typeof window !== "undefined" ? window.innerHeight : 800 });
   const [tick, setTick] = useState(0);
+  const [squeeze, setSqueeze] = useState(0); // 0 = normal, 1 = fully squeezed
   const rafRef = useRef<number>();
   const startRef = useRef<number>(performance.now());
+  const pausedTimeRef = useRef<number>(0); // frozen tick value while squeezing
+  const squeezeStartRef = useRef<number | null>(null);
 
   useEffect(() => {
     const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
@@ -20,7 +25,30 @@ const Worm = () => {
 
   useEffect(() => {
     const loop = () => {
-      setTick((performance.now() - startRef.current) / 1000);
+      const now = performance.now();
+
+      if (squeezeStartRef.current !== null) {
+        const elapsed = now - squeezeStartRef.current;
+        const total = SQUEEZE_DURATION + HOLD_DURATION + RELEASE_DURATION;
+        if (elapsed < SQUEEZE_DURATION) {
+          setSqueeze(elapsed / SQUEEZE_DURATION);
+        } else if (elapsed < SQUEEZE_DURATION + HOLD_DURATION) {
+          setSqueeze(1);
+        } else if (elapsed < total) {
+          const r = (elapsed - SQUEEZE_DURATION - HOLD_DURATION) / RELEASE_DURATION;
+          setSqueeze(1 - r);
+        } else {
+          setSqueeze(0);
+          squeezeStartRef.current = null;
+          // resume time so the worm continues smoothly from where it paused
+          startRef.current = now - pausedTimeRef.current * 1000;
+        }
+        // keep tick frozen at the moment of click
+        setTick(pausedTimeRef.current);
+      } else {
+        setTick((now - startRef.current) / 1000);
+      }
+
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
@@ -42,13 +70,19 @@ const Worm = () => {
     return { x, y };
   };
 
-  // Build segments by sampling the path slightly behind in time
+  // Build segments by sampling the path slightly behind in time.
+  // When squeezed, segments collapse toward the head.
   const head = pathAt(tick);
   const segments: Point[] = [];
-  // approximate time-step that yields ~SEGMENT_SPACING px between samples
   const dt = 0.06;
   for (let i = 0; i < SEGMENTS; i++) {
-    segments.push(pathAt(tick - i * dt));
+    const p = pathAt(tick - i * dt);
+    // ease toward head as squeeze increases
+    const k = squeeze; // 0..1
+    segments.push({
+      x: p.x + (head.x - p.x) * k,
+      y: p.y + (head.y - p.y) * k,
+    });
   }
 
   // body width tapers head-to-tail with a slight bulge mid-body
@@ -59,15 +93,28 @@ const Worm = () => {
     return 22 - u * 10 + bulge;
   };
 
-  // breathing / squish along the body
-  const squish = (i: number) => 1 + Math.sin(tick * 6 - i * 0.6) * 0.08;
+  // breathing / squish along the body — amplified while squeezing
+  const squish = (i: number) => {
+    const base = 1 + Math.sin(tick * 6 - i * 0.6) * 0.08;
+    return base + squeeze * 0.35; // fatten up when collapsed
+  };
 
   // direction at head for eyes
   const ahead = pathAt(tick + 0.05);
   const angle = Math.atan2(ahead.y - head.y, ahead.x - head.x);
 
+  const handlePress = () => {
+    if (squeezeStartRef.current !== null) return; // already squeezing
+    pausedTimeRef.current = tick;
+    squeezeStartRef.current = performance.now();
+  };
+
   return (
-    <div className="pointer-events-none fixed inset-0 z-10" aria-hidden="true">
+    <div
+      className="fixed inset-0 z-10 cursor-pointer"
+      aria-hidden="true"
+      onPointerDown={handlePress}
+    >
       <svg width={size.w} height={size.h} className="absolute inset-0">
         <defs>
           <radialGradient id="wormGrad" cx="50%" cy="35%" r="60%">
