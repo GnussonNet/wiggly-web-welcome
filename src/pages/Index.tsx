@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import Worm from "@/components/Worm";
+
+const PROJECTS = [
+  { name: "Burrow", href: "https://burrow.daggmask.com", domain: "burrow.daggmask.com" },
+];
 
 const FACTS = [
   "Did you know? Earthworms have five hearts. Redundancy is good security.",
@@ -46,18 +51,15 @@ const Index = () => {
     <main className="relative min-h-screen w-full overflow-hidden bg-background">
       <Worm />
 
-      <div className="relative z-20 flex min-h-screen flex-col">
-        <header className="flex items-center justify-between px-6 py-6 md:px-10">
+      <div className="pointer-events-none relative z-20 flex min-h-screen flex-col">
+        <header className="flex items-center px-6 py-6 md:px-10">
           <div className="font-mono text-sm tracking-tight text-foreground">
             daggmask.com
           </div>
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            cybersecurity
-          </div>
         </header>
 
-        <section className="flex flex-1 items-center px-6 md:px-10">
-          <div>
+        <div className="flex flex-1 flex-col justify-center gap-14 px-6 py-12 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+          <section aria-label="About daggmask">
             <h1 className="text-5xl font-medium tracking-tight text-foreground md:text-7xl">
               daggmask<span className="text-muted-foreground">.com</span>
             </h1>
@@ -68,8 +70,34 @@ const Index = () => {
             >
               {FACTS[factIndex]}
             </p>
-          </div>
-        </section>
+          </section>
+
+          <section aria-labelledby="projects-heading" className="w-full max-w-sm lg:w-80 lg:shrink-0">
+            <h2 id="projects-heading" className="mb-4 text-sm font-medium text-muted-foreground">
+              Projects
+            </h2>
+            <ul className="overflow-hidden rounded-xl border border-border bg-background/95">
+              {PROJECTS.map((project) => (
+                <li key={project.href}>
+                  <a
+                    href={project.href}
+                    className="pointer-events-auto group flex items-center justify-between gap-4 px-5 py-5 transition-colors hover:bg-secondary focus-visible:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground motion-reduce:transition-none"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-lg font-medium tracking-tight">{project.name}</span>
+                      <span className="mt-1 block break-all font-mono text-xs text-muted-foreground">{project.domain}</span>
+                    </span>
+                    <ArrowUpRight aria-hidden="true" className="h-5 w-5 shrink-0 text-muted-foreground group-hover:text-foreground group-focus-visible:text-foreground" />
+                  </a>
+                </li>
+              ))}
+              <li className="flex items-center gap-3 border-t border-dashed border-border px-5 py-4 text-sm text-muted-foreground">
+                <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full border border-current" />
+                More projects coming
+              </li>
+            </ul>
+          </section>
+        </div>
 
         <footer className="px-6 pb-6 md:px-10">
           <div className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
