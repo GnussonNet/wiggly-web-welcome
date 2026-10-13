@@ -5,6 +5,7 @@ import Worm from "@/components/Worm";
 const PROJECTS = [
   { name: "Burrow", href: "https://burrow.daggmask.com", domain: "burrow.daggmask.com" },
   { name: "Loam", href: "https://loam.daggmask.com", domain: "loam.daggmask.com" },
+  { name: "Trace", href: "https://trace.daggmask.com", domain: "trace.daggmask.com" },
 ];
 
 const FACTS = [
