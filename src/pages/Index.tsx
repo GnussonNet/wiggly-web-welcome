@@ -83,6 +83,8 @@ const Index = () => {
                 <li key={project.href}>
                   <a
                     href={project.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="pointer-events-auto group flex items-center justify-between gap-4 px-5 py-5 transition-colors hover:bg-secondary focus-visible:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-foreground motion-reduce:transition-none"
                   >
                     <span className="min-w-0">
