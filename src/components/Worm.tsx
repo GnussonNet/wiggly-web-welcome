@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Pause, Play } from "lucide-react";
 
 const SEGMENTS = 18;
 type Size = { w: number; h: number };
@@ -28,6 +29,7 @@ const Worm = () => {
   const eyeRefs = useRef<(SVGCircleElement | null)[]>([]);
   const tickRef = useRef(0);
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -74,7 +76,7 @@ const Worm = () => {
     const update = () => {
       cancelAnimationFrame(frame);
       lastTime = null;
-      if (visible && !document.hidden && !preference.matches) frame = requestAnimationFrame(loop);
+      if (visible && !document.hidden && !preference.matches && !paused) frame = requestAnimationFrame(loop);
     };
     paint();
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; update(); });
@@ -87,13 +89,13 @@ const Worm = () => {
       document.removeEventListener("visibilitychange", update);
       preference.removeEventListener("change", update);
     };
-  }, [size]);
+  }, [size, paused]);
 
   const tick = tickRef.current;
   const segments = Array.from({ length: SEGMENTS }, (_, i) => ({ point: pathAt(tick - i * 0.06, size), i }));
   const head = pathAt(tick, size), ahead = pathAt(tick + 0.05, size);
   const angle = Math.atan2(ahead.y - head.y, ahead.x - head.x) + Math.PI / 2;
-  return <div ref={containerRef} className="ambient-worm pointer-events-none absolute inset-0" aria-hidden="true">
+  return <><div ref={containerRef} className="ambient-worm pointer-events-none absolute inset-0" aria-hidden="true">
     <svg width={size.w} height={size.h} className="absolute inset-0">
       <defs>
         <radialGradient id="wormGrad" cx="50%" cy="35%" r="60%"><stop offset="0%" stopColor="hsl(var(--worm-body))" /><stop offset="100%" stopColor="hsl(var(--worm-shadow))" /></radialGradient>
@@ -110,6 +112,10 @@ const Worm = () => {
         {[4, -4].map((offset, i) => <circle key={i} ref={node => { eyeRefs.current[i] = node; }} cx={head.x + Math.cos(angle) * offset} cy={head.y + Math.sin(angle) * offset} r={1.8} fill="hsl(0 0% 100%)" />)}
       </g>
     </svg>
-  </div>;
+  </div>
+    {size.w > 0 && <button type="button" className="worm-motion-toggle" onClick={() => setPaused(value => !value)} aria-label={paused ? "Resume background animation" : "Pause background animation"} title={paused ? "Resume background animation" : "Pause background animation"}>
+      {paused ? <Play size={15} aria-hidden="true" /> : <Pause size={15} aria-hidden="true" />}
+    </button>}
+  </>;
 };
 export default Worm;

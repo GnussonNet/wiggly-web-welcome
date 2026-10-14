@@ -13,7 +13,7 @@ export default function Index() {
   const featured = POSTS[0];
   return <div id="top" className="landing-page">
     <SiteHeader home />
-    <main id="main-content">
+    <main id="main-content" tabIndex={-1}>
       <section className="landing-hero" aria-labelledby="hero-title">
         <Worm />
         <div className="hero-content page-width">
@@ -28,7 +28,7 @@ export default function Index() {
         <div className="tools-grid">
           {PROJECTS.map((project) => <section key={project.id} id={project.id} className={`project-section product-tile product-tile-${project.id}`} aria-labelledby={`${project.id}-name`}>
             <div className="project-copy">
-              <h3 id={`${project.id}-name`}>{project.name}</h3>
+              <h3 id={`${project.id}-name`} translate="no">{project.name}</h3>
               <p className="project-headline">{project.headline}</p>
               <p className="project-description">{project.description}</p>
               <div className="project-actions">

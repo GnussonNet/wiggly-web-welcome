@@ -76,3 +76,20 @@ it("stays still when reduced motion is requested and pauses in a hidden tab", ()
   act(() => vi.advanceTimersByTime(500));
   expect(circle.getAttribute("cx")).toBe(paused);
 });
+
+it("can be paused and resumed without restarting its path", () => {
+  const { container, getByRole } = render(<Worm />);
+  const circle = container.querySelector("g circle")!;
+  show(true);
+  act(() => vi.advanceTimersByTime(500));
+  const beforePause = circle.getAttribute("cx");
+  fireEvent.click(getByRole("button", { name: "Pause background animation" }));
+  show(true);
+  act(() => vi.advanceTimersByTime(500));
+  expect(circle.getAttribute("cx")).toBe(beforePause);
+  fireEvent.click(getByRole("button", { name: "Resume background animation" }));
+  expect(circle.getAttribute("cx")).toBe(beforePause);
+  show(true);
+  act(() => vi.advanceTimersByTime(500));
+  expect(circle.getAttribute("cx")).not.toBe(beforePause);
+});

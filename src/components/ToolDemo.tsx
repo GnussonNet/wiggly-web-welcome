@@ -34,10 +34,10 @@ function LoamExample({ stage }: { stage: number }) {
     <div className="demo-content photo-example">
       <div className="sample-file">
         <FileImage size={32} aria-hidden="true" />
-        <div><span>sample.jpg</span><small>The photo stays unchanged</small></div>
+        <div><span translate="no">sample.jpg</span><small>The photo stays unchanged</small></div>
       </div>
       <dl className="metadata-example">{DETAILS.map((detail) => <div key={detail.label} className={stage >= 2 ? "is-removed" : ""}>
-        <dt>{detail.label}</dt><dd><span>{detail.value}</span><Check size={13} aria-label={stage >= 2 ? "Removed" : undefined} aria-hidden={stage < 2} /></dd>
+        <dt>{detail.label}</dt><dd><span>{detail.value}</span><Check size={13} aria-hidden="true" />{stage >= 2 && <span className="sr-only">Removed</span>}</dd>
       </div>)}</dl>
     </div>
     <div className="demo-result"><Check size={15} aria-hidden="true" /><span>{stage >= 3 ? "A cleaned copy. The same photo." : stage >= 1 ? "Removing descriptive metadata…" : "A photo can carry more than you see"}</span></div>
@@ -48,9 +48,9 @@ function TraceExample({ stage }: { stage: number }) {
   return <>
     <div className="demo-content link-example">
       <div className="sample-heading"><Link size={17} aria-hidden="true" /><span>A link from a newsletter</span></div>
-      <div className="sample-url"><span>https://example.com/article</span><span className={stage >= 2 ? "tracking-text is-removed" : "tracking-text"}>?utm_source=newsletter<br />&amp;utm_medium=email</span><span>&amp;id=42#read</span></div>
+      <div className="sample-url" translate="no"><span>https://example.com/article</span><span className={stage >= 2 ? "tracking-text is-removed" : "tracking-text"}>?utm_source=newsletter<br />&amp;utm_medium=email</span><span>&amp;id=42#read</span></div>
       <div className="parameter-summary"><span className={stage >= 1 ? "is-selected" : ""}>{stage >= 2 ? "2 tracking parameters removed" : "2 known tracking parameters"}</span><span>Article ID and anchor kept</span></div>
-      <div className={`clean-url ${stage >= 2 ? "is-ready" : ""}`}><span>Cleaned link</span><code>https://example.com/article?id=42#read</code></div>
+      <div className={`clean-url ${stage >= 2 ? "is-ready" : ""}`} aria-hidden={stage < 2}><span>Cleaned link</span><code translate="no">https://example.com/article?id=42#read</code></div>
     </div>
     <div className="demo-result"><Check size={15} aria-hidden="true" /><span>{stage >= 3 ? "Same article. Less attached." : stage >= 1 ? "Removing known tracking parameters…" : "Choose what travels with your link"}</span></div>
   </>;
