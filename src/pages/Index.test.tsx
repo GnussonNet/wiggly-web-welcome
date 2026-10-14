@@ -14,9 +14,11 @@ it("introduces the tools with dedicated, accessible sections and the existing de
   render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><Routes><Route element={<SiteLayout />}><Route index element={<Index />} /></Route></Routes></MemoryRouter>);
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Keep control of what you share.");
   const nav = screen.getByRole("navigation", { name: "Main navigation" });
+  expect(within(nav).getByRole("link", { name: "Tools" })).toHaveAttribute("href", "/#tools");
+  expect(within(nav).getAllByRole("link")).toHaveLength(2);
+  expect(screen.queryByText("GitHub")).not.toBeInTheDocument();
   for (const name of ["Burrow", "Loam", "Trace"]) {
     const id = name.toLowerCase();
-    expect(within(nav).getByRole("link", { name })).toHaveAttribute("href", `/#${id}`);
     const section = screen.getByRole("region", { name });
     expect(within(section).getByRole("heading", { level: 3, name })).toBeInTheDocument();
     const link = within(section).getByRole("link", { name: new RegExp(`Open ${name}`) });
