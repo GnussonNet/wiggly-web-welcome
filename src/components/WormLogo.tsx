@@ -56,11 +56,10 @@ const WormLogo = () => {
             <animate
               ref={index === 0 ? wriggleRef : undefined}
               attributeName="d"
-              values={`${pose.rest};${pose.flipped};${pose.rest}`}
+              values={`${pose.rest};${pose.halfway};${pose.rest}`}
               keyTimes="0;0.5;1"
-              calcMode="spline"
-              keySplines="0.77 0 0.175 1;0.77 0 0.175 1"
-              dur="1.8s"
+              calcMode="linear"
+              dur="1.4s"
               begin="indefinite"
               fill="remove"
             />

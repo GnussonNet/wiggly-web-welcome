@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import WormLogo from "./WormLogo";
 import { MemoryRouter } from "react-router-dom";
+import { WORM_POSES } from "./worm-logo-poses";
 
 const renderLogo = () => render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><WormLogo /></MemoryRouter>);
 
@@ -59,18 +60,24 @@ describe("WormLogo", () => {
     expect(end).toHaveBeenCalledTimes(10);
   });
 
-  it("morphs both source poses without collapsing the body or separating the eyes", () => {
+  it("moves halfway toward the flipped pose without collapsing the body or separating the eyes", () => {
     setupMotion();
     const { container } = renderLogo();
     const paths = [...container.querySelectorAll("path")];
     expect(paths).toHaveLength(5);
-    paths.forEach((path) => {
+    paths.forEach((path, index) => {
       const animation = path.querySelector("animate")!;
       const poses = animation.getAttribute("values")!.split(";");
       expect(poses).toHaveLength(3);
       expect(poses[0]).toBe(path.getAttribute("d"));
       expect(poses[2]).toBe(poses[0]);
       expect(poses[1]).not.toBe(poses[0]);
+      const coordinates = (value: string) => value.match(/-?\d*\.?\d+/g)!.map(Number);
+      const rest = coordinates(WORM_POSES[index].rest);
+      const flipped = coordinates(WORM_POSES[index].flipped);
+      coordinates(poses[1]).forEach((value, coordinate) => {
+        expect(value).toBeCloseTo((rest[coordinate] + flipped[coordinate]) / 2, 2);
+      });
       expect(poses[0].replace(/[^A-Za-z]/g, "")).toBe(poses[1].replace(/[^A-Za-z]/g, ""));
     });
     const bodyPoses = paths[0].querySelector("animate")!.getAttribute("values")!.split(";");
@@ -86,10 +93,10 @@ describe("WormLogo", () => {
       return Math.abs(result / 2);
     };
     expect(area(midway)).toBeGreaterThan(area(rest) * 0.65);
-    // Each eye moves down with the flipped head; no pointer tracking is attached.
+    // Each eye follows the head through half the original movement.
     for (const eye of paths.slice(1, 3)) {
       const poses = eye.querySelector("animate")!.getAttribute("values")!.split(";");
-      expect(numbers(poses[1])[1] - numbers(poses[0])[1]).toBeGreaterThan(130);
+      expect(numbers(poses[1])[1] - numbers(poses[0])[1]).toBeGreaterThan(65);
     }
   });
 });

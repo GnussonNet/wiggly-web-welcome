@@ -70,8 +70,18 @@ const normalizeBody = (path: string): string => {
 const rest = extractPaths(restSvg);
 const flipped = extractPaths(flippedSvg);
 
-export const WORM_POSES = rest.map((path, i) => ({
-  rest: i === 0 ? normalizeBody(path) : path,
-  flipped: i === 0 ? normalizeBody(flipped[i]) : flipped[i],
-  fill: i === 1 || i === 2 ? "white" : "currentColor",
-}));
+export const WORM_POSES = rest.map((path, i) => {
+  const restPath = i === 0 ? normalizeBody(path) : path;
+  const flippedPath = i === 0 ? normalizeBody(flipped[i]) : flipped[i];
+  const targetCoordinates = flippedPath.match(/-?\d*\.?\d+/g)!.map(Number);
+  let coordinate = 0;
+  // Half the original wave, using the same interpolation for the body and eyes.
+  const halfway = restPath.replace(/-?\d*\.?\d+/g, (value) =>
+    ((Number(value) + targetCoordinates[coordinate++]) / 2).toFixed(3));
+  return {
+    rest: restPath,
+    flipped: flippedPath,
+    halfway,
+    fill: i === 1 || i === 2 ? "white" : "currentColor",
+  };
+});
