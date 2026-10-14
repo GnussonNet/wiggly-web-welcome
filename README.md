@@ -116,12 +116,24 @@ upload service, or external content request: writing is versioned with the site.
 Adding a file makes it part of the next build; keep unfinished drafts outside this
 folder. Invalid metadata fails the build rather than publishing a partial post.
 
-`npm run build` generates the SPA assets, complete HTML for `/blog` and every post,
-and `dist/sitemap.xml`. Serve the generated `dist/` directory, resolving directory
+`npm run build` generates the SPA assets, complete HTML for `/`, `/blog`, and every
+post, and `dist/sitemap.xml`. Serve the generated `dist/` directory, resolving directory
 URLs to their `index.html` and falling back to the root `index.html` for SPA routes.
-The blog's text, titles, descriptions, and canonical URLs are present before
-JavaScript runs. The client application takes over when JavaScript is enabled.
-The homepage is also generated as complete HTML, so the first paint does not wait for the JavaScript bundle.
+Text, titles, descriptions, and canonical URLs are present before JavaScript runs.
+Matching pages are hydrated in place, preserving the initial HTML. The root's
+`data-prerendered-path` identifies which page was generated, so development and
+unknown-path fallbacks use a fresh client render instead of hydrating the wrong page.
+
+`SiteRoutes` and `SiteLayout` share the same route structure in the browser and the
+prerenderer. The header and footer stay mounted during navigation. Use React Router
+`Link` for internal page links; ordinary anchors remain appropriate for external
+destinations. Page chunks load inside the shared layout, and navigation retains the
+previous content until they are ready. Route scroll handling supports tool anchors,
+new-page focus, and Back/Forward scroll restoration.
+
+The initial canvas color is defined inline in `index.html` as `--page`, before the
+bundled stylesheet or app code loads. Keep its color, the background token in
+`src/index.css`, the theme-color metadata, and the manifest colors in sync.
 
 The Trace article describes safeguards found in the implementation and controlled
 tests. It does not claim a production firewall has been verified or an independent

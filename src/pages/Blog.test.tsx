@@ -11,7 +11,7 @@ const renderPost = (slug: string) => render(<MemoryRouter initialEntries={[`/blo
 </MemoryRouter>);
 
 it("groups the published article under Trace without empty tool sections", () => {
-  render(<Blog />);
+  render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><Blog /></MemoryRouter>);
   expect(screen.getByRole("heading", { level: 1, name: "Notes from the build." })).toBeInTheDocument();
   expect(screen.getByRole("heading", { level: 2, name: "Trace" })).toBeInTheDocument();
   expect(screen.queryByRole("heading", { level: 2, name: "Loam" })).not.toBeInTheDocument();

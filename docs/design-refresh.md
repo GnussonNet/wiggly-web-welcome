@@ -22,7 +22,7 @@ The preceding image-based direction has been retired. Generated artwork, respons
 
 ## Validation
 
-- Production build, TypeScript, targeted ESLint, and all 22 tests pass.
+- Production build, TypeScript, targeted ESLint, and all 24 tests pass.
 - Chromium checks confirm inline autoplay/replay, light styling under both system theme preferences, layouts from 320px to 1440px, reduced-motion results, and completed examples without JavaScript. No page images, example dialogs, external requests, or browser errors were observed.
 - Mobile axe checks report zero WCAG A/AA violations on the homepage, blog, and article. Calendar inclusion labels use accessible text; article code blocks support keyboard scrolling with visible focus.
 
@@ -44,3 +44,11 @@ Resolved findings:
 Final Chromium checks pass for skip-link focus, case-study focus visibility, pause/resume without restarting the worm, inline replay without height changes, both system theme preferences, widths from 320px to 1440px, expanded WCAG text spacing, reduced motion, and completed examples without JavaScript. No external requests or browser errors were observed. Axe reports zero WCAG A/AA violations on all three routes at desktop and 320px widths.
 
 Final local Lighthouse using default simulated mobile throttling and gzip text compression: performance 98, accessibility 100, best practices 100, SEO 100. FCP 1.6s, LCP 2.2s, CLS 0, total blocking time 0ms. These are local lab measurements, not production field data.
+
+## Refresh and navigation fixes
+
+- The initial document sets the light canvas color before bundled CSS and JavaScript load. The background utility token now matches the page, theme-color metadata, and manifest.
+- Browser and prerendered pages use the same shared route layout. The header, worm logo, and footer stay mounted while page content changes.
+- Internal page links use the router. Slow page chunks keep the previous content visible; hydration attaches to matching generated HTML instead of replacing it.
+- Reduced-motion snapshots match between generated HTML and initial hydration. Tool demos retain their existing autoplay, replay, and static reduced-motion behavior.
+- Browser checks deliberately delayed initial scripts and blog/article chunks. All three routes hydrate without replacing the header or logging hydration warnings, and internal navigation makes no further document requests. Refreshes, both system color preferences, hash anchors, focus, Back/Forward scroll restoration, no-JavaScript reading, and 320/390/1440px layouts pass. Automated axe checks report zero WCAG A/AA violations on all three routes.

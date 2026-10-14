@@ -1,19 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const motionQuery = "(prefers-reduced-motion: reduce)";
+const subscribeMotion = (change: () => void) => {
+  const preference = window.matchMedia(motionQuery);
+  preference.addEventListener("change", change);
+  return () => preference.removeEventListener("change", change);
+};
+const getReducedMotion = () => window.matchMedia(motionQuery).matches;
+const getServerMotion = () => true;
 
 export function useToolDemo() {
   const ref = useRef<HTMLElement>(null);
   const hasPlayed = useRef(false);
   // Prerender the completed example so it is readable without JavaScript.
-  const [reduced, setReduced] = useState(() => typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const reduced = useSyncExternalStore(subscribeMotion, getReducedMotion, getServerMotion);
   const [stage, setStage] = useState(0);
   const [play, setPlay] = useState(0);
-
-  useEffect(() => {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const change = () => setReduced(preference.matches);
-    preference.addEventListener("change", change);
-    return () => preference.removeEventListener("change", change);
-  }, []);
 
   useEffect(() => {
     if (reduced || hasPlayed.current || !ref.current) return;

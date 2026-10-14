@@ -1,6 +1,9 @@
 import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import WormLogo from "./WormLogo";
+import { MemoryRouter } from "react-router-dom";
+
+const renderLogo = () => render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><WormLogo /></MemoryRouter>);
 
 const setupMotion = (enabled = true) => {
   const preference = new EventTarget();
@@ -23,7 +26,7 @@ afterEach(() => {
 describe("WormLogo", () => {
   it("finishes the current wave on exit and repeats while hovered", () => {
     const { begin, end } = setupMotion();
-    const { getByRole, container } = render(<WormLogo />);
+    const { getByRole, container } = renderLogo();
     const link = getByRole("link", { name: "daggmask.com home" });
     const animation = container.querySelector("animate")!;
     fireEvent.pointerEnter(link);
@@ -40,7 +43,7 @@ describe("WormLogo", () => {
 
   it("honors motion/pointer preferences and stops on preference changes or unmount", () => {
     const { preference, begin, end } = setupMotion(false);
-    const { getByRole, unmount } = render(<WormLogo />);
+    const { getByRole, unmount } = renderLogo();
     const link = getByRole("link");
     fireEvent.pointerEnter(link);
     expect(begin).not.toHaveBeenCalled();
@@ -58,7 +61,7 @@ describe("WormLogo", () => {
 
   it("morphs both source poses without collapsing the body or separating the eyes", () => {
     setupMotion();
-    const { container } = render(<WormLogo />);
+    const { container } = renderLogo();
     const paths = [...container.querySelectorAll("path")];
     expect(paths).toHaveLength(5);
     paths.forEach((path) => {

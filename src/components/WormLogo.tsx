@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { WORM_POSES } from "./worm-logo-poses";
 
 const WormLogo = () => {
@@ -48,7 +49,7 @@ const WormLogo = () => {
   }, []);
 
   return (
-    <a ref={linkRef} href="/" aria-label="daggmask.com home" className="worm-logo pointer-events-auto text-foreground">
+    <Link ref={linkRef} to="/" aria-label="daggmask.com home" className="worm-logo pointer-events-auto text-foreground">
       <svg viewBox="-16 -16 725 292" fill="none" aria-hidden="true" className="block h-auto w-full">
         {WORM_POSES.map((pose, index) => (
           <path key={index} fill={pose.fill === "white" ? "var(--logo-eye, white)" : pose.fill} d={pose.rest}>
@@ -66,7 +67,7 @@ const WormLogo = () => {
           </path>
         ))}
       </svg>
-    </a>
+    </Link>
   );
 };
 

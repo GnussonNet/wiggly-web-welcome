@@ -24,7 +24,7 @@ for (const page of staticPages) {
   }
   html = html.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/, `<link rel="canonical" href="${origin + page.path}" />`);
   const content = renderPage(page.path);
-  html = html.replace('<div id="root"></div>', () => `<div id="root">${content}</div>`);
+  html = html.replace('<div id="root"></div>', () => `<div id="root" data-prerendered-path="${escape(page.path)}">${content}</div>`);
   const directory = path.join(root, 'dist', page.path);
   await mkdir(directory, { recursive: true });
   await writeFile(path.join(directory, 'index.html'), html);

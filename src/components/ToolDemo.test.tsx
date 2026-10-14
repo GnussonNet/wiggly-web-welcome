@@ -1,6 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ToolDemo from "./ToolDemo";
+import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 
 class Observer {
   static instances: Observer[] = [];
@@ -20,6 +22,19 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
 describe("Tool demonstrations", () => {
+  it("hydrates its completed HTML without replacing it or mismatching motion preferences", () => {
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(<ToolDemo tool="trace" name="Trace" />);
+    const figure = container.querySelector("figure");
+    expect(figure).toHaveAttribute("data-stage", "3");
+    const onRecoverableError = vi.fn();
+    let root: ReturnType<typeof hydrateRoot>;
+    act(() => { root = hydrateRoot(container, <ToolDemo tool="trace" name="Trace" />, { onRecoverableError }); });
+    expect(container.querySelector("figure")).toBe(figure);
+    expect(onRecoverableError).not.toHaveBeenCalled();
+    act(() => root.unmount());
+  });
+
   it("starts at 35% visibility, completes once, and can be replayed", () => {
     const { container } = render(<ToolDemo tool="burrow" name="Burrow" />);
     const observer = Observer.instances[0];
