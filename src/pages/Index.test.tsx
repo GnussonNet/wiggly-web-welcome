@@ -3,6 +3,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import SiteLayout from "@/components/SiteLayout";
 import Index from "./Index";
+import { FEATURED_POST, postHref } from "@/lib/blog";
 
 vi.mock("@/components/Worm", () => ({ default: () => <div data-testid="hero-worm" /> }));
 vi.mock("@/components/WormLogo", () => ({ default: () => <a href="/" aria-label="daggmask.com home">Logo</a> }));
@@ -26,7 +27,10 @@ it("introduces the tools with dedicated, accessible sections and the existing de
   expect(screen.getByRole("region", { name: "Keep control of what you share." })).toContainElement(screen.getByTestId("hero-worm"));
   expect([...document.querySelectorAll(".project-section h3")].map((heading) => heading.textContent)).toEqual(["Trace", "Burrow", "Loam"]);
   expect(screen.getAllByText("Source code coming soon")).toHaveLength(3);
-  expect(screen.getByRole("link", { name: /Why Trace won’t follow every link/ })).toHaveAttribute("href", "/blog/trace-redirect-safety");
+  const writing = screen.getByRole("region", { name: "Behind the tools." });
+  expect(within(writing).getAllByRole("article")).toHaveLength(1);
+  expect(within(writing).getByRole("link", { name: new RegExp(FEATURED_POST.title) })).toHaveAttribute("href", postHref(FEATURED_POST));
+  expect(within(writing).getByRole("link", { name: "Read all posts" })).toHaveAttribute("href", "/blog");
   expect(screen.getByRole("link", { name: "Blog" })).toHaveAttribute("href", "/blog");
   expect(screen.queryByText(/Did you know/)).not.toBeInTheDocument();
   expect(screen.getByText(/Redirect checks contact destinations through the server/)).toBeInTheDocument();

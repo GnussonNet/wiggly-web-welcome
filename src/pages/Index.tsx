@@ -4,13 +4,13 @@ import Worm from "@/components/Worm";
 import ToolDemo from "@/components/ToolDemo";
 import StoryCard from "@/components/StoryCard";
 import { PROJECTS } from "@/lib/projects";
-import { POSTS } from "@/lib/blog";
+import { FEATURED_POST } from "@/lib/blog";
 import { HOME_METADATA } from "@/lib/page-metadata";
 import { usePageMetadata } from "@/hooks/use-page-metadata";
 
 export default function Index() {
   usePageMetadata(HOME_METADATA);
-  const featured = POSTS[0];
+  const featured = FEATURED_POST;
   return <main id="main-content" tabIndex={-1}>
       <section className="landing-hero" aria-labelledby="hero-title">
         <Worm />
@@ -42,6 +42,7 @@ export default function Index() {
       {featured && <section className="featured-writing page-width" aria-labelledby="writing-heading">
         <header className="collection-heading"><h2 id="writing-heading">Behind the tools.</h2><p>The decisions, tradeoffs, and limits behind what we build.</p></header>
         <StoryCard post={featured} />
+        <Link className="all-posts-link" to="/blog">Read all posts</Link>
       </section>}
   </main>;
 }

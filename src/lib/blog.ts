@@ -36,4 +36,6 @@ const sources = import.meta.glob<string>("../content/blog/*.md", { query: "?raw"
 export const POSTS = Object.entries(sources).map(([filename, source]) => parsePost(source, filename))
   .sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
 export const postHref = (post: Post) => `/blog/${post.slug}`;
+// Chosen independently of publication order; change this slug to feature another post.
+export const FEATURED_POST = POSTS.find((post) => post.slug === "trace-redirect-safety") ?? POSTS[0];
 export const formatPostDate = (date: string) => new Intl.DateTimeFormat("en", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));

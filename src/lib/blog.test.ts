@@ -5,12 +5,12 @@ const post = (fields = "", body = "A case study.") => `---\ntitle: "A security d
 
 describe("Markdown publishing", () => {
   it("loads the Trace case study and derives its stable route from the filename", () => {
-    expect(POSTS).toHaveLength(1);
-    expect(POSTS[0].project).toBe("trace");
-    expect(postHref(POSTS[0])).toBe("/blog/trace-redirect-safety");
-    expect(POSTS[0].readingMinutes).toBeGreaterThan(1);
-    expect(POSTS[0].body).toContain("not an independent security audit");
-    expect(POSTS[0].body).toContain("operator assertion");
+    const trace = POSTS.find((post) => post.slug === "trace-redirect-safety")!;
+    expect(trace.project).toBe("trace");
+    expect(postHref(trace)).toBe("/blog/trace-redirect-safety");
+    expect(trace.readingMinutes).toBeGreaterThan(1);
+    expect(trace.body).toContain("not an independent security audit");
+    expect(trace.body).toContain("operator assertion");
   });
   it("supports ordinary Markdown and Windows line endings", () => {
     const result = parsePost(post("", "## A boundary\n\n- A deliberate limitation").replace(/\n/g, "\r\n"), "a-decision.md");

@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
 import Blog from "./Blog";
 import BlogPost from "./BlogPost";
+import { POSTS } from "@/lib/blog";
 
 vi.mock("@/components/WormLogo", () => ({ default: () => <a href="/">Daggmask home</a> }));
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -10,11 +11,13 @@ const renderPost = (slug: string) => render(<MemoryRouter initialEntries={[`/blo
   <Routes><Route path="/blog/:slug" element={<BlogPost />} /></Routes>
 </MemoryRouter>);
 
-it("groups the published article under Trace without empty tool sections", () => {
+it("lists all posts in publication order with article titles as headings", () => {
   render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><Blog /></MemoryRouter>);
   expect(screen.getByRole("heading", { level: 1, name: "Notes from the build." })).toBeInTheDocument();
-  expect(screen.getByRole("heading", { level: 2, name: "Trace" })).toBeInTheDocument();
-  expect(screen.queryByRole("heading", { level: 2, name: "Loam" })).not.toBeInTheDocument();
+  expect(screen.getByRole("list", { name: "All posts, newest first" })).toBeInTheDocument();
+  expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual(POSTS.map((post) => post.title));
+  expect(screen.getByRole("link", { name: /Why Burrow uses AI to suggest rules/ })).toHaveAttribute("href", "/blog/burrow-ai-and-saved-rules");
+  expect(screen.getByRole("link", { name: /How Loam removes metadata without recompressing your photo/ })).toHaveAttribute("href", "/blog/loam-metadata-without-recompression");
   expect(screen.getByRole("link", { name: /Why Trace won’t follow every link/ })).toHaveAttribute("href", "/blog/trace-redirect-safety");
   expect(document.title).toBe("Security Case Studies & Project Notes — Daggmask");
 });
