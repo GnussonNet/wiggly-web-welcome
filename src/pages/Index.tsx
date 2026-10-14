@@ -28,16 +28,6 @@ const Index = () => {
   const [factIndex, setFactIndex] = useState(0);
   const [visible, setVisible] = useState(true);
 
-  useEffect(() => {
-    document.title = "daggmask.com — cybersecurity";
-    const meta = document.querySelector('meta[name="description"]') ?? (() => {
-      const m = document.createElement("meta");
-      m.setAttribute("name", "description");
-      document.head.appendChild(m);
-      return m;
-    })();
-    meta.setAttribute("content", "daggmask.com — cybersecurity. Quietly digging through the layers.");
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
