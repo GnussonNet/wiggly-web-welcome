@@ -55,3 +55,17 @@
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 }
+
+.worm-logo {
+  display: inline-flex;
+  align-items: center;
+  width: 4.5rem;
+  min-height: 44px;
+  border-radius: 6px;
+}
+
+.worm-logo:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+

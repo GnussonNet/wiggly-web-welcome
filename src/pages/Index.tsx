@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Worm from "@/components/Worm";
+import WormLogo from "@/components/WormLogo";
 
 const PROJECTS = [
   { name: "Burrow", href: "https://burrow.daggmask.com", domain: "burrow.daggmask.com" },
@@ -55,9 +56,7 @@ const Index = () => {
 
       <div className="pointer-events-none relative z-20 flex min-h-screen flex-col">
         <header className="flex items-center px-6 py-6 md:px-10">
-          <div className="font-mono text-sm tracking-tight text-foreground">
-            daggmask.com
-          </div>
+          <WormLogo />
         </header>
 
         <div className="flex flex-1 flex-col justify-center gap-14 px-6 py-12 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
