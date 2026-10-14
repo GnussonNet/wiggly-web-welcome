@@ -51,7 +51,7 @@ const WormLogo = () => {
     <a ref={linkRef} href="/" aria-label="daggmask.com home" className="worm-logo pointer-events-auto text-foreground">
       <svg viewBox="-16 -16 725 292" fill="none" aria-hidden="true" className="block h-auto w-full">
         {WORM_POSES.map((pose, index) => (
-          <path key={index} fill={pose.fill} d={pose.rest}>
+          <path key={index} fill={pose.fill === "white" ? "var(--logo-eye, white)" : pose.fill} d={pose.rest}>
             <animate
               ref={index === 0 ? wriggleRef : undefined}
               attributeName="d"

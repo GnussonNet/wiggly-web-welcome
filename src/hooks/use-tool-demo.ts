@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 export function useToolDemo() {
   const ref = useRef<HTMLElement>(null);
   const hasPlayed = useRef(false);
-  const [reduced, setReduced] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  // Prerender the completed example so it is readable without JavaScript.
+  const [reduced, setReduced] = useState(() => typeof window === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [stage, setStage] = useState(0);
   const [play, setPlay] = useState(0);
 

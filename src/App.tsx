@@ -21,7 +21,7 @@ const App = ({ blogPages }: { blogPages?: BlogPages }) => {
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner theme="light" />
       <BrowserRouter>
         <Suspense fallback={<p className="page-width route-loading" role="status">Loading…</p>}>
         <Routes>

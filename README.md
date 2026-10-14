@@ -121,7 +121,7 @@ and `dist/sitemap.xml`. Serve the generated `dist/` directory, resolving directo
 URLs to their `index.html` and falling back to the root `index.html` for SPA routes.
 The blog's text, titles, descriptions, and canonical URLs are present before
 JavaScript runs. The client application takes over when JavaScript is enabled.
-The homepage remains client-rendered.
+The homepage is also generated as complete HTML, so the first paint does not wait for the JavaScript bundle.
 
 The Trace article describes safeguards found in the implementation and controlled
 tests. It does not claim a production firewall has been verified or an independent

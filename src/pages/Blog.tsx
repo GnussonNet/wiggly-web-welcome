@@ -1,6 +1,6 @@
-import { ArrowUpRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-import { formatPostDate, POSTS, postHref } from "@/lib/blog";
+import StoryCard from "@/components/StoryCard";
+import { POSTS } from "@/lib/blog";
 import { PROJECTS } from "@/lib/projects";
 import { BLOG_METADATA } from "@/lib/page-metadata";
 import { usePageMetadata } from "@/hooks/use-page-metadata";
@@ -15,13 +15,10 @@ export default function Blog() {
         const posts = POSTS.filter((post) => post.project === project.id);
         return posts.length ? <section className="post-group" key={project.id} aria-labelledby={`${project.id}-posts`}>
           <h2 id={`${project.id}-posts`}>{project.name}</h2>
-          <div>{posts.map((post) => <article className="post-preview" key={post.slug}>
-            <div className="post-date"><time dateTime={post.date}>{formatPostDate(post.date)}</time><span>{post.readingMinutes} min read</span></div>
-            <h3><a href={postHref(post)}>{post.title}<ArrowUpRight size={20} aria-hidden="true" /></a></h3>
-            <p>{post.description}</p>
-          </article>)}</div>
+          <div className="stories-grid">{posts.map((post) => <StoryCard post={post} key={post.slug} />)}</div>
         </section> : null;
       })}
+      {!POSTS.length && <div className="writing-empty"><h2>More to share soon.</h2><p>Case studies will appear here as they’re published.</p></div>}
     </main>
     <SiteFooter />
   </div>;

@@ -26,6 +26,7 @@ export default function BlogPost() {
         <div className="article-body"><Markdown skipHtml components={{
           a: ({ children, href }) => <a href={href} {...(href?.startsWith("https://") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{children}</a>,
           h1: ({ children }) => <h2>{children}</h2>,
+          pre: ({ children }) => <pre tabIndex={0}>{children}</pre>,
         }}>{post.body}</Markdown></div>
         <footer className="article-end"><a href={project.href} target="_blank" rel="noopener noreferrer">Open {project.name}<span className="sr-only"> (opens in a new tab)</span></a><a href="/blog">More from the build</a></footer>
       </article>

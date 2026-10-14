@@ -29,6 +29,6 @@ for (const page of staticPages) {
   await mkdir(directory, { recursive: true });
   await writeFile(path.join(directory, 'index.html'), html);
 }
-const locations = ['/', ...staticPages.map(page => page.path)];
+const locations = [...new Set(staticPages.map(page => page.path))];
 await writeFile(path.join(root, 'dist/sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${locations.map(location => `  <url><loc>${origin}${location}</loc></url>`).join('\n')}\n</urlset>\n`);
-console.log(`Generated ${staticPages.length} blog pages and sitemap.xml.`);
+console.log(`Generated ${staticPages.length} pages and sitemap.xml.`);
