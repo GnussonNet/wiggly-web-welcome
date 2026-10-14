@@ -78,3 +78,59 @@ IMPLEMENTATION AND SCOPE
 
 Deliver the working tool and its matching landing page, not only a visual mockup. Keep the first release focused on inspecting, cleaning, and downloading one image. Batch processing and additional formats can follow later.
 ```
+
+## License
+
+The Daggmask website, its original branding, and its written content are not
+open source. See the [copyright notice](LICENSE). The package is marked
+`UNLICENSED`; third-party dependencies, fonts, and bundled assets retain their
+own licenses and notices.
+
+The separately maintained Trace, Burrow, and Loam tools are licensed under MIT.
+Their licenses do not apply to this website.
+
+## Writing a case study
+
+Blog posts live in `src/content/blog/`. Add a Markdown file with a lowercase,
+hyphenated filename; the filename becomes its `/blog/<filename>` URL. For example:
+
+```markdown
+---
+title: "A decision worth explaining"
+description: "A short summary for the blog listing and social previews."
+date: "2026-10-14"
+project: "trace"
+---
+
+Start with the problem, then explain the decisions, tradeoffs, evidence, and limits.
+
+## What could go wrong
+
+Write the article here. Standard Markdown headings, links, lists, and fenced code
+blocks are supported. Raw HTML is not rendered.
+```
+
+Use `trace`, `burrow`, or `loam` for `project`. Posts are grouped by project and sorted
+newest first. The homepage features the newest published post. There is no CMS,
+upload service, or external content request: writing is versioned with the site.
+Adding a file makes it part of the next build; keep unfinished drafts outside this
+folder. Invalid metadata fails the build rather than publishing a partial post.
+
+`npm run build` generates the SPA assets, complete HTML for `/blog` and every post,
+and `dist/sitemap.xml`. Serve the generated `dist/` directory, resolving directory
+URLs to their `index.html` and falling back to the root `index.html` for SPA routes.
+The blog's text, titles, descriptions, and canonical URLs are present before
+JavaScript runs. The client application takes over when JavaScript is enabled.
+The homepage remains client-rendered.
+
+The Trace article describes safeguards found in the implementation and controlled
+tests. It does not claim a production firewall has been verified or an independent
+security audit has been performed.
+
+## Source publication
+
+The Daggmask GitHub organization name is still undecided. Tool source links show
+“Source code coming soon” until public repositories are ready. Do not replace these
+labels with guessed organization URLs. The website does not advertise a source-code or MIT license link. Repository
+visibility is managed separately on GitHub; changing this local notice does not
+make an existing public repository private.

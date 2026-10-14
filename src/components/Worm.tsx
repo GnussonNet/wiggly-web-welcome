@@ -6,25 +6,56 @@ const SEGMENTS = 18;
 type Point = { x: number; y: number };
 
 const Worm = () => {
-  const [size, setSize] = useState({ w: typeof window !== "undefined" ? window.innerWidth : 1200, h: typeof window !== "undefined" ? window.innerHeight : 800 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
   const [tick, setTick] = useState(0);
-  const rafRef = useRef<number>();
-  const startRef = useRef<number>(performance.now());
 
   useEffect(() => {
-    const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const container = containerRef.current;
+    if (!container) return;
+    const measure = () => {
+      const { width, height } = container.getBoundingClientRect();
+      setSize({ w: width, h: height });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    const loop = () => {
-      setTick((performance.now() - startRef.current) / 1000);
-      rafRef.current = requestAnimationFrame(loop);
+    const container = containerRef.current;
+    if (!container) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    let frame = 0;
+    let elapsed = 0;
+    let lastTime: number | null = null;
+    const loop = (now: number) => {
+      if (lastTime !== null) elapsed += (now - lastTime) / 1000;
+      lastTime = now;
+      setTick(elapsed);
+      frame = requestAnimationFrame(loop);
     };
-    rafRef.current = requestAnimationFrame(loop);
+    const update = () => {
+      cancelAnimationFrame(frame);
+      lastTime = null;
+      if (visible && !document.hidden && !preference.matches) {
+        frame = requestAnimationFrame(loop);
+      }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      update();
+    });
+    observer.observe(container);
+    document.addEventListener("visibilitychange", update);
+    preference.addEventListener("change", update);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+      preference.removeEventListener("change", update);
     };
   }, []);
 
@@ -65,7 +96,7 @@ const Worm = () => {
   const angle = Math.atan2(ahead.y - head.y, ahead.x - head.x);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-10" aria-hidden="true">
+    <div ref={containerRef} className="ambient-worm pointer-events-none absolute inset-0" aria-hidden="true">
       <svg width={size.w} height={size.h} className="absolute inset-0">
         <defs>
           <radialGradient id="wormGrad" cx="50%" cy="35%" r="60%">
