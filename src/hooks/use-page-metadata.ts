@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { SITE_ORIGIN, type PageMetadata } from "@/lib/page-metadata";
+import { DEFAULT_SHARE_IMAGE, SHARE_IMAGE_HEIGHT, SHARE_IMAGE_WIDTH, SITE_ORIGIN, type PageMetadata } from "@/lib/page-metadata";
 
-export function usePageMetadata({ title, description, path, article = false, noindex = false }: PageMetadata) {
+export function usePageMetadata({ title, description, path, article = false, noindex = false, image = DEFAULT_SHARE_IMAGE, imageAlt = title }: PageMetadata) {
   useEffect(() => {
     document.title = title;
     const set = (attribute: "name" | "property", key: string, content: string) => {
@@ -16,6 +16,14 @@ export function usePageMetadata({ title, description, path, article = false, noi
     set("name", "description", description);
     set("name", "twitter:title", title);
     set("name", "twitter:description", description);
+    set("name", "twitter:card", "summary_large_image");
+    set("name", "twitter:image", SITE_ORIGIN + image);
+    set("name", "twitter:image:alt", imageAlt);
+    set("property", "og:image", SITE_ORIGIN + image);
+    set("property", "og:image:alt", imageAlt);
+    set("property", "og:image:type", "image/png");
+    set("property", "og:image:width", String(SHARE_IMAGE_WIDTH));
+    set("property", "og:image:height", String(SHARE_IMAGE_HEIGHT));
     set("property", "og:title", title);
     set("property", "og:description", description);
     set("property", "og:url", SITE_ORIGIN + path);
@@ -28,5 +36,5 @@ export function usePageMetadata({ title, description, path, article = false, noi
       document.head.appendChild(canonical);
     }
     canonical.href = SITE_ORIGIN + path;
-  }, [title, description, path, article, noindex]);
+  }, [title, description, path, article, noindex, image, imageAlt]);
 }

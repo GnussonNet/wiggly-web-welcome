@@ -1,16 +1,15 @@
 import Markdown from "react-markdown";
 import { Link, useParams } from "react-router-dom";
-import { formatPostDate, POSTS, postHref } from "@/lib/blog";
+import { formatPostDate, POSTS } from "@/lib/blog";
 import { PROJECTS } from "@/lib/projects";
 import { usePageMetadata } from "@/hooks/use-page-metadata";
 import NotFound from "./NotFound";
+import { postMetadata } from "@/lib/page-metadata";
 
 export default function BlogPost() {
   const { slug } = useParams();
   const post = POSTS.find((candidate) => candidate.slug === slug);
-  usePageMetadata(post ? {
-    title: `${post.title} — Daggmask`, description: post.description, path: postHref(post), article: true,
-  } : { title: "Article not found — Daggmask", description: "This article could not be found.", path: `/blog/${slug ?? ""}`, noindex: true });
+  usePageMetadata(post ? postMetadata(post) : { title: "Article not found — Daggmask", description: "This article could not be found.", path: `/blog/${slug ?? ""}`, noindex: true });
   if (!post) return <NotFound />;
   const project = PROJECTS.find((candidate) => candidate.id === post.project)!;
   return <main id="main-content" tabIndex={-1} className="article-main page-width">

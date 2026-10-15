@@ -1,9 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, expect, it, vi } from "vitest";
 import Blog from "./Blog";
 import BlogPost from "./BlogPost";
 import { POSTS } from "@/lib/blog";
+import { SITE_ORIGIN } from "@/lib/page-metadata";
 
 vi.mock("@/components/WormLogo", () => ({ default: () => <a href="/">Daggmask home</a> }));
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -38,4 +39,22 @@ it("shows a real not-found state instead of a misleading article for an unknown 
   renderPost("not-a-post");
   expect(screen.getByRole("heading", { name: "404" })).toBeInTheDocument();
   expect(document.head.querySelector('meta[name="robots"]')).toHaveAttribute("content", "noindex, follow");
+});
+
+it("updates social images between posts and resets them on the blog listing", () => {
+  render(<MemoryRouter initialEntries={[`/blog/${POSTS[0].slug}`]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <Routes><Route path="/blog" element={<Blog />} /><Route path="/blog/:slug" element={<BlogPost />} /></Routes>
+  </MemoryRouter>);
+  const expectImage = (image: string) => {
+    expect(document.head.querySelector('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
+    expect(document.head.querySelector('meta[property="og:image"]')).toHaveAttribute("content", SITE_ORIGIN + image);
+    expect(document.head.querySelector('meta[name="twitter:image"]')).toHaveAttribute("content", SITE_ORIGIN + image);
+  };
+  for (const post of POSTS) {
+    fireEvent.click(screen.getByRole("link", { name: "All posts" }));
+    expectImage("/social/blog.png");
+    fireEvent.click(screen.getByRole("link", { name: new RegExp(post.title) }));
+    expectImage(`/social/blog/${post.slug}.png`);
+    expect(document.head.querySelector('meta[property="og:image:alt"]')).toHaveAttribute("content", `${post.title} — Daggmask`);
+  }
 });

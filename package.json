@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:social": "npm run build && node --test scripts/social-share.test.mjs",
     "test:watch": "vitest",
     "prerender": "vite build --ssr src/prerender.tsx --outDir .prerender && node scripts/prerender.mjs"
   },
@@ -68,6 +69,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@napi-rs/canvas": "^1.0.11",
     "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.0.0",

@@ -120,6 +120,15 @@ folder. Invalid metadata fails the build rather than publishing a partial post.
 post, and `dist/sitemap.xml`. Serve the generated `dist/` directory, resolving directory
 URLs to their `index.html` and falling back to the root `index.html` for SPA routes.
 Text, titles, descriptions, and canonical URLs are present before JavaScript runs.
+The build also generates a branded 1200 × 630 PNG for each post in
+`dist/social/blog/`, using its title and project, plus cards for the homepage and
+blog listing. Open Graph and Twitter image tags and `summary_large_image` are
+included in each page's initial HTML and updated during browser navigation.
+New posts get their images automatically at build time; no image service or
+manual artwork is required. Deploy the complete `dist/` directory, including
+`social/`, so crawlers can fetch both the article HTML and its image.
+Run `npm run test:social` to build and validate the crawler metadata, image
+dimensions, and distinct post images.
 Matching pages are hydrated in place, preserving the initial HTML. The root's
 `data-prerendered-path` identifies which page was generated, so development and
 unknown-path fallbacks use a fresh client render instead of hydrating the wrong page.
