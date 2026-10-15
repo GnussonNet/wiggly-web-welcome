@@ -129,6 +129,36 @@ manual artwork is required. Deploy the complete `dist/` directory, including
 `social/`, so crawlers can fetch both the article HTML and its image.
 Run `npm run test:social` to build and validate the crawler metadata, image
 dimensions, and distinct post images.
+
+The production server must resolve `/blog/<slug>` to
+`/blog/<slug>/index.html` before applying its SPA fallback. A browser can hide
+incorrect server routing because React replaces the metadata after loading;
+social crawlers read the initial HTML. If the explicit `index.html` URL has the
+right title but the clean URL has the homepage title, fix the server routing.
+For Coolify's default Nixpacks deployment, `nixpacks.toml` overrides the generated
+Caddyfile with this routing behavior. Leave the install, build, and start command
+fields at their defaults and redeploy after committing the configuration.
+Nixpacks still runs the existing build script and starts its Caddy server on
+`PORT` (3000 by default); HTTPS remains handled by Coolify's proxy.
+For a Caddy file server, keep the existing site root and replace its SPA
+`try_files` rule with:
+
+```caddyfile
+try_files {path}/index.html {path} /index.html
+file_server
+```
+
+This rule checks generated page HTML first, then static assets, then the SPA
+fallback. Apply it to the Caddy server serving `dist/`, rather than an unrelated
+reverse proxy. See [Caddy's try_files documentation](https://caddyserver.com/docs/caddyfile/directives/try_files).
+After building locally, check the actual deployment with:
+
+```bash
+SOCIAL_TEST_ORIGIN=https://daggmask.com node --test scripts/social-share.test.mjs
+```
+
+This requests the clean article URLs without running JavaScript, catching
+homepage fallbacks that local file checks cannot detect.
 Matching pages are hydrated in place, preserving the initial HTML. The root's
 `data-prerendered-path` identifies which page was generated, so development and
 unknown-path fallbacks use a fresh client render instead of hydrating the wrong page.

@@ -1,5 +1,6 @@
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 
 // Use the site's bundled fonts, never fonts installed on the build machine.
 export async function createSocialImage(page, root, width, height) {
@@ -15,11 +16,9 @@ export async function createSocialImage(page, root, width, height) {
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#f5f5f7';
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = '#1d1d1f';
-  ctx.font = '500 32px "Share Inter"';
-  ctx.fillText('daggmask', 64, 88);
-  const logo = await loadImage(path.join(root, 'public/web-app-manifest-192x192.png'));
-  ctx.drawImage(logo, width - 140, 40, 76, 76);
+  // Reuse the transparent vector mark from the site, rather than the opaque favicon.
+  const logo = await loadImage(await readFile(path.join(root, 'src/assets/worm/rest.svg')));
+  ctx.drawImage(logo, 64, 52, 128, 48);
   ctx.fillStyle = '#626268';
   ctx.font = '18px "Share Mono"';
   ctx.fillText(page.imageLabel ?? 'Notes from the build', 64, 160);

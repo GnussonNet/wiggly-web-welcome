@@ -1,0 +1,18 @@
+# Override Nixpacks' generated SPA Caddyfile; keep its default build and start.
+[staticAssets]
+Caddyfile = '''
+{
+    admin off
+    persist_config off
+    auto_https off
+}
+
+:{$PORT:3000} {
+    root * /app/{$NIXPACKS_SPA_OUTPUT_DIR:dist}
+    encode gzip
+
+    # Prefer prerendered HTML before the SPA fallback, including clean blog URLs.
+    try_files {path}/index.html {path} /index.html
+    file_server
+}
+'''
